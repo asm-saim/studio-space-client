@@ -1,10 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
+  images: {
+    remotePatterns: [
+      // Placeholder images used by the seed script. Add your real image host here too.
+      { protocol: "https", hostname: "picsum.photos" },
+    ],
+  },
   turbopack: {
     rules: {
       "*.css": {
