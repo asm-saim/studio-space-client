@@ -174,14 +174,43 @@ function AuthActions({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
+function subscribeToScroll(callback: () => void) {
+  window.addEventListener("scroll", callback, { passive: true })
+  return () => window.removeEventListener("scroll", callback)
+}
+
 export function SiteHeader() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const closeMobile = React.useCallback(() => setMobileOpen(false), [])
   const { user } = useAuth()
 
+  // On "/" the navbar starts transparent, overlaid on the hero slider
+  // (Navbar + Hero = 100svh), then becomes a fixed blurred bar on scroll.
+  const isHome = pathname === "/"
+  const scrolled = React.useSyncExternalStore(
+    subscribeToScroll,
+    () => window.scrollY > 24,
+    () => false
+  )
+
+  const overlayingHero = isHome && !scrolled
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-md">
+    <header
+      className={cn(
+        "z-50",
+        overlayingHero
+          ? "absolute inset-x-0 top-0 border-b border-transparent bg-transparent"
+          : isHome
+            ? "fixed inset-x-0 top-0 border-b border-border/70 bg-background/80 backdrop-blur-md"
+            : "sticky top-0 border-b border-border/70 bg-background/80 backdrop-blur-md",
+        // Keep the navbar readable over the slider while the mobile menu is open.
+        overlayingHero &&
+          mobileOpen &&
+          "border-border/70 bg-background/80 backdrop-blur-md"
+      )}
+    >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4">
         <Logo />
 

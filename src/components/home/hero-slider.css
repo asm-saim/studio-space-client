@@ -1,0 +1,53 @@
+/*
+ * Hero slider styles — imported ONLY by hero-slider.tsx.
+ * Plain CSS with .hero-slider-prefixed selectors (no :global syntax, which
+ * the Tailwind v4 loader rejects in .module.css files). Nothing here touches
+ * globals.css, and the prefixes keep everything contained to the hero.
+ */
+
+/* Container-level theming: Swiper picks these custom properties up for the
+   pagination element it injects. */
+.hero-slider {
+  --swiper-pagination-color: #f47a27;
+  --swiper-pagination-bottom: 2rem;
+  --swiper-pagination-bullet-size: 0.625rem;
+  --swiper-pagination-bullet-width: 0.625rem;
+  --swiper-pagination-bullet-height: 0.625rem;
+  --swiper-pagination-bullet-inactive-color: #ffffff;
+  --swiper-pagination-bullet-inactive-opacity: 0.4;
+  --swiper-pagination-bullet-horizontal-gap: 0.375rem;
+}
+
+/* Slow ken-burns zoom on the active slide's background image.
+   Swiper applies its inline transform to the slide element itself,
+   so animating the <img> child does not conflict with Swiper. */
+.hero-slide-image {
+  transform: scale(1);
+  transition: transform 7000ms ease-out;
+  will-change: transform;
+}
+
+.hero-slider .swiper-slide-active .hero-slide-image {
+  transform: scale(1.07);
+}
+
+/* Bullets: smooth resize + widen the active one into a pill. */
+.hero-slider .swiper-pagination-bullet {
+  transition:
+    width 300ms ease,
+    background-color 300ms ease;
+}
+
+.hero-slider .swiper-pagination-bullet-active {
+  width: 1.5rem;
+  border-radius: 9999px;
+}
+
+/* Respect reduced-motion: kill the zoom entirely. Autoplay and slide speed
+   are disabled from JS as well (see hero-slider.tsx). */
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide-image {
+    transform: none !important;
+    transition: none !important;
+  }
+}
