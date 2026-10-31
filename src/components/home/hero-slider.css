@@ -23,7 +23,7 @@
    so animating the <img> child does not conflict with Swiper. */
 .hero-slide-image {
   transform: scale(1);
-  transition: transform 7000ms ease-out;
+  transition: transform 5000ms ease-out;
   will-change: transform;
 }
 
