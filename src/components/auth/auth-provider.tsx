@@ -1,49 +1,64 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { authClient } from "@/lib/auth-client"
 
 export type AuthUser = {
   name: string
   email: string
-  image: string
+  image?: string
 }
 
 type AuthContextValue = {
   user: AuthUser | null
-  login: () => void
-  logout: () => void
-}
-
-/**
- * Temporary demo user so the authenticated navbar can be built and verified
- * before BetterAuth is wired up. Replace the internals of this provider with
- * a real BetterAuth session — consumers (header/footer) won't need to change.
- */
-const DEMO_USER: AuthUser = {
-  name: "Ava Rahman",
-  email: "ava@studiospace.io",
-  image: "https://i.pravatar.cc/128?img=47",
+  /** True while the session is being loaded on first render. */
+  isPending: boolean
+  logout: () => Promise<void>
 }
 
 const AuthContext = React.createContext<AuthContextValue | null>(null)
 
+/**
+ * Backed by the BetterAuth session (HTTPOnly cookie). The session is read on
+ * the client, so a page refresh keeps the user logged in.
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = React.useState<AuthUser | null>(null)
+  const router = useRouter()
+  const { data: session, isPending } = authClient.useSession()
+  const sessionUser = session?.user
 
-  const login = React.useCallback(() => {
-    setUser(DEMO_USER)
-    toast.success("Welcome back to StudioSpace, Ava!")
-  }, [])
+  const user = React.useMemo<AuthUser | null>(
+    () =>
+      sessionUser
+        ? {
+            name: sessionUser.name,
+            email: sessionUser.email,
+            image: sessionUser.image ?? undefined,
+          }
+        : null,
+    [sessionUser]
+  )
 
-  const logout = React.useCallback(() => {
-    setUser(null)
-    toast.success("You have been logged out")
-  }, [])
+  const logout = React.useCallback(async () => {
+    try {
+      const { error } = await authClient.signOut()
+      if (error) {
+        toast.error(error.message || "Could not log out. Please try again.")
+        return
+      }
+      toast.success("You have been logged out")
+      router.push("/")
+      router.refresh()
+    } catch {
+      toast.error("Could not log out. Please try again.")
+    }
+  }, [router])
 
   const value = React.useMemo(
-    () => ({ user, login, logout }),
-    [user, login, logout]
+    () => ({ user, isPending, logout }),
+    [user, isPending, logout]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
