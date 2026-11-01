@@ -5,10 +5,9 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   reactCompiler: true,
   images: {
-    remotePatterns: [
-      // Placeholder images used by the seed script. Add your real image host here too.
-      { protocol: "https", hostname: "picsum.photos" },
-    ],
+    // Hosts add their own image URLs (imgbb, Google avatars, anywhere on https),
+    // so any https host is allowed. Tighten this list before a real launch.
+    remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
   turbopack: {
     rules: {

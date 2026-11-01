@@ -1,18 +1,23 @@
-import type { Metadata } from "next"
-import { CirclePlus } from "lucide-react"
-import { PlaceholderPage } from "@/components/layout/placeholder-page"
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import { PageContainer } from "@/components/shared/page-container";
+import { StudioForm } from "@/components/studios/studio-form";
+import { requireUser } from "@/lib/session";
 
-export const metadata: Metadata = {
-  title: "Add New Studio",
+
+export const metadata: Metadata = { title: "Add a studio" };
+
+async function AddStudioContent() {
+  const user = await requireUser("/add-studio");
+  return <StudioForm mode="create" host={{ name: user.name, email: user.email }} />;
 }
 
 export default function AddStudioPage() {
   return (
-    <PlaceholderPage
-      label="Private Route"
-      title="List a New Studio"
-      description="The listing form — title, category, hourly rate, deposit, capacity, photos, and amenities — arrives with the CRUD task."
-      icon={CirclePlus}
-    />
-  )
+    <PageContainer narrow title="Add a new studio" description="Share your space with creators. You can edit or remove it any time from My Listings.">
+      <Suspense fallback={<div aria-hidden="true" className="h-[40rem] animate-pulse rounded-2xl bg-muted" />}>
+        <AddStudioContent />
+      </Suspense>
+    </PageContainer>
+  );
 }

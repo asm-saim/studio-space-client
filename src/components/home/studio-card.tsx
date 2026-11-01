@@ -2,9 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { StudioSummary } from "@/lib/studios";
-import { getCategoryLabel } from "./categories";
 
+import type { StudioSummary } from "@/lib/studios";
+import { getCategoryLabel } from "./categories";
 
 export function StudioCard({ studio }: { studio: StudioSummary }) {
   return (
@@ -47,11 +47,7 @@ export function StudioCard({ studio }: { studio: StudioSummary }) {
             ${studio.hourlyRate}
             <span className="text-sm font-normal text-muted-foreground"> / hr</span>
           </p>
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={<Link href={`/studios/${studio.slug ?? studio.id}`} />}
-          >
+          <Button variant="outline" nativeButton={false} render={<Link href={`/studios/${studio.id}`} />}>
             View Details
           </Button>
         </div>
