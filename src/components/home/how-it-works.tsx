@@ -1,9 +1,4 @@
-const STEPS = [
-  { title: "Discover spaces", description: "Search by category, location, and price to find a studio that fits your shoot." },
-  { title: "Select shoot hours", description: "Pick your date and the hours you need. The total updates as you choose." },
-  { title: "Book instantly", description: "Confirm and pay online. Your booking is secured right away." },
-  { title: "Create & produce", description: "Arrive, set up, and get to work. The space is yours for the hours you booked." },
-];
+import { HOW_IT_WORKS_STEPS } from "@/components/content/how-it-works-steps";
 
 export function HowItWorks() {
   return (
@@ -17,7 +12,7 @@ export function HowItWorks() {
         </div>
 
         <ol className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          {STEPS.map((step, i) => (
+          {HOW_IT_WORKS_STEPS.map((step, i) => (
             <li key={step.title} className="border-t pt-6">
               <span className="font-heading flex size-10 items-center justify-center rounded-full bg-primary text-base font-bold text-primary-foreground">
                 {i + 1}

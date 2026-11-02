@@ -12,6 +12,10 @@ import { getCategoryLabel } from "@/components/home/categories";
 import { formatDate, formatMoney, initialsOf } from "@/lib/format";
 import { BookingModal } from "@/components/studios/booking-modal";
 
+// Dynamic segment: the shared layout's usePathname() can't be baked into a
+// static shell (the URL is only known at request time), so this route blocks.
+export const instant = false;
+
 function Stars({ rating }: { rating: number }) {
   const filled = Math.round(rating);
   return (

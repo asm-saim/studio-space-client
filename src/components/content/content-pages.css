@@ -1,0 +1,27 @@
+/*
+ * Entrance polish for the content pages (/how-it-works, /about).
+ * Imported only by those page files — nothing in globals.css is touched.
+ * Disabled entirely under prefers-reduced-motion.
+ */
+
+@keyframes content-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero-enter {
+  animation: content-fade-up 600ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter {
+    animation: none;
+  }
+}

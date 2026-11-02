@@ -9,6 +9,10 @@ import { getStudio } from "@/lib/studios";
 
 export const metadata: Metadata = { title: "Update studio" };
 
+// Dynamic segment: the shared layout's usePathname() can't be baked into a
+// static shell (the URL is only known at request time), so this route blocks.
+export const instant = false;
+
 async function EditStudioContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await requireUser(`/studios/edit/${id}`);

@@ -1,12 +1,4 @@
-import { BadgeCheck, Headset, ShieldCheck, Wrench } from "lucide-react";
-
-// Adjust the wording to match your real policies before launch.
-const ASSURANCES = [
-  { icon: ShieldCheck, title: "Liability protection", description: "Accidental damage during a booking is covered, so hosts and creators are both protected." },
-  { icon: BadgeCheck, title: "Verified profiles", description: "Hosts and creators are identity-checked before their first booking." },
-  { icon: Wrench, title: "Equipment safety", description: "Gear is listed up front and kept in working order, so you know what is in the room." },
-  { icon: Headset, title: "24/7 host support", description: "If something goes wrong mid-session, a real person is available at any hour." },
-];
+import { GUARANTEES } from "@/components/content/guarantees";
 
 export function HostGuarantee() {
   return (
@@ -22,7 +14,7 @@ export function HostGuarantee() {
         </div>
 
         <ul className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {ASSURANCES.map(({ icon: Icon, title, description }) => (
+          {GUARANTEES.map(({ icon: Icon, title, description }) => (
             <li key={title}>
               <Icon aria-hidden="true" className="size-7" />
               <h3 className="font-heading mt-4 text-lg font-semibold">{title}</h3>

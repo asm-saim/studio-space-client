@@ -19,6 +19,13 @@ export type HeroSlide = {
   secondaryCta: HeroSlideCta
 }
 
+/**
+ * Shared CTAs — defined once so a target change (like the host flow) can
+ * never half-land across the slides.
+ */
+const EXPLORE_CTA: HeroSlideCta = { label: "Explore Studios", href: "/studios" }
+const HOST_CTA: HeroSlideCta = { label: "Host Your Space", href: "/add-studio" }
+
 export const HERO_SLIDES: readonly HeroSlide[] = [
   {
     id: "photo-studios",
@@ -28,8 +35,8 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     headline: "Chase the Perfect Light",
     description:
       "Book photo studios by the hour — cyc walls, strobes, and grip gear ready when your shoot is.",
-    primaryCta: { label: "Explore Studios", href: "/studios" },
-    secondaryCta: { label: "Host Your Space", href: "/studios" },
+    primaryCta: EXPLORE_CTA,
+    secondaryCta: HOST_CTA,
   },
   {
     id: "creative-workspaces",
@@ -39,8 +46,8 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     headline: "Where Ideas Take Shape",
     description:
       "Art workshops and creative workspaces with room to think, make, and mess up — priced by the hour.",
-    primaryCta: { label: "Explore Studios", href: "/studios" },
-    secondaryCta: { label: "Host Your Space", href: "/studios" },
+    primaryCta: EXPLORE_CTA,
+    secondaryCta: HOST_CTA,
   },
   {
     id: "podcast-studios",
@@ -50,8 +57,8 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     headline: "Press Record. Sound Brilliant.",
     description:
       "Acoustically treated podcast lounges with broadcast-quality mics. Roll in, plug in, hit record.",
-    primaryCta: { label: "Explore Studios", href: "/studios" },
-    secondaryCta: { label: "Host Your Space", href: "/studios" },
+    primaryCta: EXPLORE_CTA,
+    secondaryCta: HOST_CTA,
   },
   {
     id: "event-spaces",
@@ -61,8 +68,8 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     headline: "Host Events That Wow",
     description:
       "Launches, pop-ups, and showcases in distinctive spaces — transparent hourly rates, zero surprise fees.",
-    primaryCta: { label: "Explore Studios", href: "/studios" },
-    secondaryCta: { label: "Host Your Space", href: "/studios" },
+    primaryCta: EXPLORE_CTA,
+    secondaryCta: HOST_CTA,
   },
   {
     id: "production-stages",
@@ -72,7 +79,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     headline: "Lights. Camera. Roll.",
     description:
       "Cinema sound stages and production suites with the power, clearance, and space your crew needs.",
-    primaryCta: { label: "Explore Studios", href: "/studios" },
-    secondaryCta: { label: "Host Your Space", href: "/studios" },
+    primaryCta: EXPLORE_CTA,
+    secondaryCta: HOST_CTA,
   },
 ]
