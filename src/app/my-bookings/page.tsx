@@ -2,16 +2,16 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarDays, Clock, MapPin, Users } from "lucide-react";
+import { CalendarDays, Clock, CloudOff, MapPin, Users } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { PageContainer } from "@/components/shared/page-container";
-
-import { Button } from "@/components/ui/button";
-import { requireUser } from "@/lib/session";
-import { getMyBookings } from "@/lib/private-data";
+import { ListSkeleton } from "@/components/shared/skeletons";
 import { BookingStatusBadge } from "@/components/studios/booking-status-badge";
-import { formatDate, formatMoney, formatTime } from "@/lib/format";
 import { CancelBookingButton } from "@/components/studios/cancel-booking-button";
-
+import { Button } from "@/components/ui/button";
+import { formatDate, formatMoney, formatTime } from "@/lib/format";
+import { getMyBookings } from "@/lib/private-data";
+import { requireUser } from "@/lib/session";
 
 export const metadata: Metadata = { title: "My bookings" };
 
@@ -24,20 +24,21 @@ async function Bookings() {
   } catch (error) {
     console.error("Failed to load bookings", error);
     return (
-      <div className="rounded-2xl border border-dashed p-10 text-center text-muted-foreground">
-        We couldn&apos;t load your bookings right now. Please refresh in a moment.
-      </div>
+      <EmptyState icon={CloudOff} title="We couldn't load your bookings" description="Something went wrong on our side. Please try again in a moment.">
+        <Button nativeButton={false} render={<Link href="/my-bookings" />}>
+          Try again
+        </Button>
+      </EmptyState>
     );
   }
 
   if (bookings.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed p-10 text-center">
-        <p className="text-muted-foreground">You haven&apos;t booked a studio yet.</p>
+      <EmptyState icon={CalendarDays} title="No bookings yet" description="Find a space for your next shoot, recording, or workshop and your reservations will show up here.">
         <Button nativeButton={false} render={<Link href="/studios" />}>
           Explore studios
         </Button>
-      </div>
+      </EmptyState>
     );
   }
 
@@ -93,13 +94,7 @@ export default function MyBookingsPage() {
   return (
     <PageContainer title="My bookings" description="Your studio reservations and their status.">
       <Suspense
-        fallback={
-          <div aria-hidden="true" className="space-y-4">
-            {Array.from({ length: 3 }, (_, i) => (
-              <div key={i} className="h-40 animate-pulse rounded-2xl bg-muted" />
-            ))}
-          </div>
-        }
+        fallback={<ListSkeleton />}
       >
         <Bookings />
       </Suspense>
