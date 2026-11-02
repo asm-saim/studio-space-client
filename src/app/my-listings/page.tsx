@@ -8,7 +8,6 @@ import { PageContainer } from "@/components/shared/page-container";
 import { ListSkeleton } from "@/components/shared/skeletons";
 import { DeleteStudioButton } from "@/components/studios/delete-studio-button";
 import { Button } from "@/components/ui/button";
-
 import { formatMoney } from "@/lib/format";
 import { getMyStudios } from "@/lib/private-data";
 import { requireUser } from "@/lib/session";
@@ -92,10 +91,15 @@ export default function MyListingsPage() {
       title="My studio listings"
       description="Spaces you host on StudioSpace."
       action={
-        <Button nativeButton={false} render={<Link href="/add-studio" />}>
-          <Plus aria-hidden="true" />
-          Add new studio
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" nativeButton={false} render={<Link href="/booking-requests" />}>
+            Booking requests
+          </Button>
+          <Button nativeButton={false} render={<Link href="/add-studio" />}>
+            <Plus aria-hidden="true" />
+            Add new studio
+          </Button>
+        </div>
       }
     >
       <Suspense

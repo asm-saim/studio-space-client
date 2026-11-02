@@ -3,9 +3,9 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { cancelBooking } from "@/app/actions/bookings";
+import { cancelBooking } from "@/lib/mutations";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Button } from "@/components/ui/button";
-import { ConfirmDialog } from "../shared/confirm-dialog";
 
 export function CancelBookingButton({ id, title }: { id: string; title: string }) {
   const router = useRouter();
@@ -27,7 +27,12 @@ export function CancelBookingButton({ id, title }: { id: string; title: string }
 
   return (
     <>
-      <Button type="button" variant="outline" className="text-destructive hover:text-destructive" onClick={() => setOpen(true)}>
+      <Button
+        type="button"
+        variant="outline"
+        className="text-destructive hover:text-destructive"
+        onClick={() => setOpen(true)}
+      >
         Cancel Booking
       </Button>
       <ConfirmDialog

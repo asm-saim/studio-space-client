@@ -123,7 +123,7 @@ async function StudioDetails({ params }: { params: Promise<{ id: string }> }) {
             <h2 id="host-heading" className="font-heading text-xl font-semibold">Your host</h2>
             <div className="mt-4 flex items-center gap-4 rounded-xl border bg-card p-4">
               <Avatar>
-                <AvatarImage src={studio.ownerImage} alt={studio.ownerName} />
+                <AvatarImage src={studio.ownerImage} alt={studio.ownerName} referrerPolicy="no-referrer" />
                 <AvatarFallback>{initialsOf(studio.ownerName)}</AvatarFallback>
               </Avatar>
               <div className="min-w-0">

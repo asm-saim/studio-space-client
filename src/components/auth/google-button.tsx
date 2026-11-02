@@ -23,7 +23,11 @@ export function GoogleButton({ callbackURL = "/" }: { callbackURL?: string }) {
   async function handleClick() {
     setPending(true);
     try {
-      const { error } = await authClient.signIn.social({ provider: "google", callbackURL });
+      // /api/session issues the HttpOnly JWT cookie, then redirects to the destination.
+      const { error } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: `/api/session?redirect=${encodeURIComponent(callbackURL)}`,
+      });
       if (error) {
         toast.error(error.message || "Google sign-in failed. Please try again.");
         setPending(false);

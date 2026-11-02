@@ -43,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = React.useCallback(async () => {
     try {
+      await fetch("/api/session", { method: "DELETE" }).catch(() => null)
       const { error } = await authClient.signOut()
       if (error) {
         toast.error(error.message || "Could not log out. Please try again.")

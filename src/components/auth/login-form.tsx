@@ -48,6 +48,8 @@ export function LoginForm() {
         toast.error(message);
         return;
       }
+      // Issue the HttpOnly JWT cookie that guards mutations.
+      await fetch("/api/session", { method: "POST" }).catch(() => null);
       toast.success("Welcome back!");
       router.push(redirectTo);
       router.refresh();

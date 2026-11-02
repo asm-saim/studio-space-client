@@ -15,6 +15,7 @@ import {
 import { cn } from "cn";
 import { useAuth, type AuthUser } from "@/components/auth/auth-provider";
 import { Logo } from "@/components/layout/logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,7 +67,7 @@ function initialsOf(name: string) {
 function UserAvatar({ user, size }: { user: AuthUser; size?: "sm" | "default" }) {
   return (
     <Avatar size={size}>
-      <AvatarImage src={user.image} alt={user.name} />
+      <AvatarImage src={user.image} alt={user.name} referrerPolicy="no-referrer" />
       <AvatarFallback>{initialsOf(user.name)}</AvatarFallback>
     </Avatar>
   );
@@ -181,8 +182,10 @@ export function SiteHeader() {
     <header
       className={cn(
         "z-50",
+        // The hero is always dark, so while the navbar floats over it the header
+        // uses the dark theme tokens (light text) even when the site is in light mode.
         overlayingHero
-          ? "absolute inset-x-0 top-0 border-b border-transparent bg-transparent"
+          ? "dark absolute inset-x-0 top-0 border-b border-transparent bg-transparent"
           : isHome
             ? "fixed inset-x-0 top-0 border-b border-border/70 bg-background/80 backdrop-blur-md"
             : "sticky top-0 border-b border-border/70 bg-background/80 backdrop-blur-md",
@@ -210,6 +213,8 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
+
           {isPending ? (
             <div aria-hidden="true" className="h-9 w-28 animate-pulse rounded-lg bg-muted" />
           ) : user ? (
@@ -229,6 +234,7 @@ export function SiteHeader() {
               </Button>
             </>
           )}
+
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger
               aria-label="Open navigation menu"

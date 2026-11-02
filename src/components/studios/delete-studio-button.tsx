@@ -4,10 +4,9 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { deleteStudio } from "@/app/actions/studios";
-
+import { deleteStudio } from "@/lib/mutations";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Button } from "@/components/ui/button";
-import { ConfirmDialog } from "../shared/confirm-dialog";
 
 export function DeleteStudioButton({ id, title }: { id: string; title: string }) {
   const router = useRouter();

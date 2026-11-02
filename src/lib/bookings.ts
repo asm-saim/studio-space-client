@@ -27,3 +27,9 @@ export type BookingInput = {
   guests: number;
   notes: string;
 };
+
+/** A booking as the host sees it: includes who asked. */
+export type BookingRequest = Booking & {
+  userName: string;
+  userEmail: string;
+};

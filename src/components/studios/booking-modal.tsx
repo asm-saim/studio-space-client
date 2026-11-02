@@ -3,7 +3,7 @@
 import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { createBooking } from "@/app/actions/bookings";
+import { createBooking } from "@/lib/mutations";
 import { useAuth } from "@/components/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,9 +16,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/shared/spinner";
 import { textareaClass } from "@/components/studios/form-parts";
 import { formatMoney, toMinutes } from "@/lib/format";
-
 
 export type BookingStudio = {
   id: string;
@@ -164,6 +164,7 @@ export function BookingModal({ studio }: { studio: BookingStudio }) {
                 Cancel
               </Button>
               <Button type="submit" disabled={pending}>
+                {pending && <Spinner />}
                 {pending ? "Sending…" : "Request booking"}
               </Button>
             </DialogFooter>

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/shared/spinner";
 import { FieldError } from "@/components/studios/form-parts";
 
 type ImageFieldProps = {
@@ -62,9 +63,17 @@ export function ImageField({ id, label, value, onChange, onRemove, error }: Imag
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
         />
-        <input ref={fileRef} type="file" accept="image/*" className="hidden" tabIndex={-1} aria-hidden="true" onChange={handleFile} />
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          tabIndex={-1}
+          aria-hidden="true"
+          onChange={handleFile}
+        />
         <Button type="button" variant="outline" disabled={uploading} onClick={() => fileRef.current?.click()}>
-          <Upload aria-hidden="true" />
+          {uploading ? <Spinner /> : <Upload aria-hidden="true" />}
           {uploading ? "Uploading…" : "Upload"}
         </Button>
         {onRemove && (
