@@ -2,15 +2,17 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Pencil, Plus, Star } from "lucide-react";
+import { Building2, CloudOff, MapPin, Pencil, Plus, Star } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { PageContainer } from "@/components/shared/page-container";
-import { requireUser } from "@/lib/session";
-import { getMyStudios } from "@/lib/private-data";
-import { Button } from "@/components/ui/button";
-import { getCategoryLabel } from "@/components/home/categories";
-import { formatMoney } from "@/lib/format";
+import { ListSkeleton } from "@/components/shared/skeletons";
 import { DeleteStudioButton } from "@/components/studios/delete-studio-button";
+import { Button } from "@/components/ui/button";
 
+import { formatMoney } from "@/lib/format";
+import { getMyStudios } from "@/lib/private-data";
+import { requireUser } from "@/lib/session";
+import { getCategoryLabel } from "@/components/home/categories";
 
 export const metadata: Metadata = { title: "My listings" };
 
@@ -23,20 +25,21 @@ async function Listings() {
   } catch (error) {
     console.error("Failed to load listings", error);
     return (
-      <div className="rounded-2xl border border-dashed p-10 text-center text-muted-foreground">
-        We couldn&apos;t load your listings right now. Please refresh in a moment.
-      </div>
+      <EmptyState icon={CloudOff} title="We couldn't load your listings" description="Something went wrong on our side. Please try again in a moment.">
+        <Button nativeButton={false} render={<Link href="/my-listings" />}>
+          Try again
+        </Button>
+      </EmptyState>
     );
   }
 
   if (studios.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed p-10 text-center">
-        <p className="text-muted-foreground">You haven&apos;t listed a studio yet.</p>
+      <EmptyState icon={Building2} title="No listings yet" description="List your first studio and start welcoming creators to your space.">
         <Button nativeButton={false} render={<Link href="/add-studio" />}>
           Add your first studio
         </Button>
-      </div>
+      </EmptyState>
     );
   }
 
@@ -96,13 +99,7 @@ export default function MyListingsPage() {
       }
     >
       <Suspense
-        fallback={
-          <div aria-hidden="true" className="space-y-4">
-            {Array.from({ length: 3 }, (_, i) => (
-              <div key={i} className="h-36 animate-pulse rounded-2xl bg-muted" />
-            ))}
-          </div>
-        }
+        fallback={<ListSkeleton itemClassName="h-36" />}
       >
         <Listings />
       </Suspense>

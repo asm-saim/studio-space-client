@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { CloudOff, Search, SearchX } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { PageContainer } from "@/components/shared/page-container";
 import { StudioCard } from "@/components/home/studio-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import { getStudios, type StudioSummary } from "@/lib/studios";
 import { cn } from "@/lib/utils";
 import { STUDIO_CATEGORIES } from "@/components/home/categories";
@@ -97,15 +97,27 @@ async function StudiosResults({ searchParams }: { searchParams: SearchParams }) 
       </nav>
 
       {failed ? (
-        <div className="mt-10 rounded-2xl border border-dashed p-10 text-center text-muted-foreground">
-          We couldn&apos;t load studios right now. Please refresh in a moment.
+        <div className="mt-10">
+          <EmptyState icon={CloudOff} title="We couldn't load studios" description="Something went wrong on our side. Please try again in a moment.">
+            <Button nativeButton={false} render={<Link href="/studios" />}>
+              Try again
+            </Button>
+          </EmptyState>
         </div>
       ) : studios.length === 0 ? (
-        <div className="mt-10 flex flex-col items-center gap-4 rounded-2xl border border-dashed p-10 text-center">
-          <p className="text-muted-foreground">No studios match your search yet.</p>
-          <Button variant="outline" nativeButton={false} render={<Link href="/studios" />}>
-            Clear filters
-          </Button>
+        <div className="mt-10">
+          <EmptyState
+            icon={SearchX}
+            title="No studios found"
+            description={q ? `Nothing matched "${q}". Try a different search or clear your filters.` : "No studios in this category yet. Try another category or be the first to list one."}
+          >
+            <Button nativeButton={false} render={<Link href="/studios" />}>
+              Clear filters
+            </Button>
+            <Button variant="outline" nativeButton={false} render={<Link href="/add-studio" />}>
+              Add a studio
+            </Button>
+          </EmptyState>
         </div>
       ) : (
         <>
