@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleButton } from "@/components/auth/google-button";
 import { PasswordField } from "@/components/auth/password-field";
+import { Spinner } from "@/components/shared/spinner";
 import { authClient } from "@/lib/auth-client";
 import { PASSWORD_RULES, getPasswordErrors } from "@/lib/password";
 import { getSafeRedirect, withRedirect } from "@/lib/safe-redirect";
@@ -151,6 +152,7 @@ export function RegisterForm() {
         )}
 
         <Button type="submit" size="lg" className="h-11 w-full" disabled={pending}>
+          {pending && <Spinner />}
           {pending ? "Creating account…" : "Register"}
         </Button>
       </form>

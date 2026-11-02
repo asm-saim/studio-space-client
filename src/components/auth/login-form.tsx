@@ -9,12 +9,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleButton } from "@/components/auth/google-button";
 import { PasswordField } from "@/components/auth/password-field";
+import { Spinner } from "@/components/shared/spinner";
 import { authClient } from "@/lib/auth-client";
 import { getSafeRedirect, withRedirect } from "@/lib/safe-redirect";
 
 export function LoginForm() {
   const router = useRouter();
-  const redirectTo = getSafeRedirect(useSearchParams().get("redirect"));
+  const searchParams = useSearchParams();
+  const redirectTo = getSafeRedirect(searchParams.get("redirect"));
+  const hasRedirect = searchParams.has("redirect");
+
+  React.useEffect(() => {
+    if (hasRedirect) toast.info("Please log in to continue.", { id: "login-required" });
+  }, [hasRedirect]);
   const [pending, setPending] = React.useState(false);
   const [formError, setFormError] = React.useState<string | null>(null);
 
@@ -82,6 +89,7 @@ export function LoginForm() {
         )}
 
         <Button type="submit" size="lg" className="h-11 w-full" disabled={pending}>
+          {pending && <Spinner />}
           {pending ? "Logging in…" : "Login"}
         </Button>
       </form>

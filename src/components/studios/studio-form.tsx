@@ -8,10 +8,12 @@ import { toast } from "sonner";
 import { createStudio, updateStudio } from "@/app/actions/studios";
 import { AmenitiesPicker } from "@/components/studios/amenities-picker";
 import { FieldError, selectClass, textareaClass } from "@/components/studios/form-parts";
+import { Spinner } from "@/components/shared/spinner";
 import { ImageField } from "@/components/studios/image-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
 import type { Studio, StudioInput } from "@/lib/studios";
 import { STUDIO_CATEGORIES } from "../home/categories";
 
@@ -118,13 +120,27 @@ export function StudioForm({ mode, studioId, initial, host }: StudioFormProps) {
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="title">Title</Label>
-          <Input id="title" value={values.title} onChange={(e) => setValue("title", e.target.value)} placeholder="e.g. Northlight Photo Loft" aria-invalid={invalid("title")} aria-describedby={describedBy("title")} />
+          <Input
+            id="title"
+            value={values.title}
+            onChange={(e) => setValue("title", e.target.value)}
+            placeholder="e.g. Northlight Photo Loft"
+            aria-invalid={invalid("title")}
+            aria-describedby={describedBy("title")}
+          />
           <FieldError id="title-error" message={errors.title} />
         </div>
 
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="category">Category</Label>
-          <select id="category" value={values.category} onChange={(e) => setValue("category", e.target.value)} className={selectClass} aria-invalid={invalid("category")} aria-describedby={describedBy("category")}>
+          <select
+            id="category"
+            value={values.category}
+            onChange={(e) => setValue("category", e.target.value)}
+            className={selectClass}
+            aria-invalid={invalid("category")}
+            aria-describedby={describedBy("category")}
+          >
             <option value="" disabled>
               Select a category
             </option>
@@ -139,31 +155,78 @@ export function StudioForm({ mode, studioId, initial, host }: StudioFormProps) {
 
         <div className="space-y-2">
           <Label htmlFor="hourlyRate">Hourly rate ($)</Label>
-          <Input id="hourlyRate" type="number" inputMode="decimal" min="1" step="any" value={values.hourlyRate} onChange={(e) => setValue("hourlyRate", e.target.value)} placeholder="45" aria-invalid={invalid("hourlyRate")} aria-describedby={describedBy("hourlyRate")} />
+          <Input
+            id="hourlyRate"
+            type="number"
+            inputMode="decimal"
+            min="1"
+            step="any"
+            value={values.hourlyRate}
+            onChange={(e) => setValue("hourlyRate", e.target.value)}
+            placeholder="45"
+            aria-invalid={invalid("hourlyRate")}
+            aria-describedby={describedBy("hourlyRate")}
+          />
           <FieldError id="hourlyRate-error" message={errors.hourlyRate} />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="securityDeposit">Security deposit ($)</Label>
-          <Input id="securityDeposit" type="number" inputMode="decimal" min="0" step="any" value={values.securityDeposit} onChange={(e) => setValue("securityDeposit", e.target.value)} placeholder="100" aria-invalid={invalid("securityDeposit")} aria-describedby={describedBy("securityDeposit")} />
+          <Input
+            id="securityDeposit"
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="any"
+            value={values.securityDeposit}
+            onChange={(e) => setValue("securityDeposit", e.target.value)}
+            placeholder="100"
+            aria-invalid={invalid("securityDeposit")}
+            aria-describedby={describedBy("securityDeposit")}
+          />
           <FieldError id="securityDeposit-error" message={errors.securityDeposit} />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="maxCapacity">Max capacity (people)</Label>
-          <Input id="maxCapacity" type="number" inputMode="numeric" min="1" step="1" value={values.maxCapacity} onChange={(e) => setValue("maxCapacity", e.target.value)} placeholder="10" aria-invalid={invalid("maxCapacity")} aria-describedby={describedBy("maxCapacity")} />
+          <Input
+            id="maxCapacity"
+            type="number"
+            inputMode="numeric"
+            min="1"
+            step="1"
+            value={values.maxCapacity}
+            onChange={(e) => setValue("maxCapacity", e.target.value)}
+            placeholder="10"
+            aria-invalid={invalid("maxCapacity")}
+            aria-describedby={describedBy("maxCapacity")}
+          />
           <FieldError id="maxCapacity-error" message={errors.maxCapacity} />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="location">Location / address</Label>
-          <Input id="location" value={values.location} onChange={(e) => setValue("location", e.target.value)} placeholder="Street, city" autoComplete="street-address" aria-invalid={invalid("location")} aria-describedby={describedBy("location")} />
+          <Input
+            id="location"
+            value={values.location}
+            onChange={(e) => setValue("location", e.target.value)}
+            placeholder="Street, city"
+            autoComplete="street-address"
+            aria-invalid={invalid("location")}
+            aria-describedby={describedBy("location")}
+          />
           <FieldError id="location-error" message={errors.location} />
         </div>
       </div>
 
       <div className="space-y-5">
-        <ImageField id="image" label="Cover image URL" value={values.image} onChange={(v) => setValue("image", v)} error={errors.image} />
+        <ImageField
+          id="image"
+          label="Cover image URL"
+          value={values.image}
+          onChange={(v) => setValue("image", v)}
+          error={errors.image}
+        />
 
         {extraImages.map((url, index) => (
           <ImageField
@@ -192,7 +255,15 @@ export function StudioForm({ mode, studioId, initial, host }: StudioFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="overview">Detailed overview</Label>
-        <textarea id="overview" value={values.overview} onChange={(e) => setValue("overview", e.target.value)} placeholder="Describe the space, the equipment, house rules, and what makes it a good fit." className={textareaClass} aria-invalid={invalid("overview")} aria-describedby={describedBy("overview")} />
+        <textarea
+          id="overview"
+          value={values.overview}
+          onChange={(e) => setValue("overview", e.target.value)}
+          placeholder="Describe the space, the equipment, house rules, and what makes it a good fit."
+          className={textareaClass}
+          aria-invalid={invalid("overview")}
+          aria-describedby={describedBy("overview")}
+        />
         <FieldError id="overview-error" message={errors.overview} />
       </div>
 
@@ -208,10 +279,18 @@ export function StudioForm({ mode, studioId, initial, host }: StudioFormProps) {
       </div>
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button type="button" variant="outline" size="lg" className="h-11" nativeButton={false} render={<Link href="/my-listings" />}>
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="h-11"
+          nativeButton={false}
+          render={<Link href="/my-listings" />}
+        >
           Cancel
         </Button>
         <Button type="submit" size="lg" className="h-11" disabled={pending}>
+          {pending && <Spinner />}
           {pending ? "Saving…" : mode === "create" ? "Add studio" : "Save changes"}
         </Button>
       </div>

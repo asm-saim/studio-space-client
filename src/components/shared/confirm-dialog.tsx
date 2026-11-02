@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/shared/spinner";
 import {
   Dialog,
   DialogContent,
@@ -43,6 +44,7 @@ export function ConfirmDialog({
             {cancelLabel}
           </Button>
           <Button type="button" variant="destructive" disabled={pending} onClick={onConfirm}>
+            {pending && <Spinner />}
             {pending ? "Working…" : confirmLabel}
           </Button>
         </DialogFooter>

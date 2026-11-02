@@ -3,6 +3,7 @@
 import * as React from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/shared/spinner";
 import { authClient } from "@/lib/auth-client";
 
 function GoogleIcon() {
@@ -36,7 +37,7 @@ export function GoogleButton({ callbackURL = "/" }: { callbackURL?: string }) {
 
   return (
     <Button type="button" variant="outline" size="lg" className="h-11 w-full gap-3" disabled={pending} onClick={handleClick}>
-      <GoogleIcon />
+      {pending ? <Spinner className="size-5" /> : <GoogleIcon />}
       {pending ? "Redirecting…" : "Continue with Google"}
     </Button>
   );

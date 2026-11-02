@@ -1,8 +1,11 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { Building2 } from "lucide-react";
+import { StudioCard } from "@/components/home/studio-card";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Skeleton } from "@/components/shared/skeletons";
 import { Button } from "@/components/ui/button";
-import { getFeaturedStudios, StudioSummary } from "@/lib/studios";
-import { StudioCard } from "./studio-card";
+import { getFeaturedStudios, type StudioSummary } from "@/lib/studios";
 
 async function StudioGrid() {
   let studios: StudioSummary[] = [];
@@ -14,11 +17,15 @@ async function StudioGrid() {
 
   if (studios.length === 0) {
     return (
-      <div className="mt-10 flex flex-col items-center gap-4 rounded-2xl border border-dashed p-10 text-center">
-        <p className="text-muted-foreground">No studios are listed yet. Be the first to share a space.</p>
-        <Button nativeButton={false} render={<Link href="/add-studio" />}>
-          Add your studio
-        </Button>
+      <div className="mt-10">
+        <EmptyState icon={Building2} title="No studios listed yet" description="Be the first to share a space with the StudioSpace community.">
+          <Button nativeButton={false} render={<Link href="/add-studio" />}>
+            Add your studio
+          </Button>
+          <Button variant="outline" nativeButton={false} render={<Link href="/studios" />}>
+            Browse all studios
+          </Button>
+        </EmptyState>
       </div>
     );
   }
@@ -34,14 +41,14 @@ async function StudioGrid() {
 
 function StudioGridSkeleton() {
   return (
-    <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
+    <div role="status" aria-label="Loading studios" className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }, (_, i) => (
         <div key={i} className="overflow-hidden rounded-2xl border bg-card">
-          <div className="aspect-[4/3] animate-pulse bg-muted" />
+          <Skeleton className="aspect-[4/3] rounded-none" />
           <div className="space-y-3 p-5">
-            <div className="h-5 w-2/3 animate-pulse rounded bg-muted" />
-            <div className="h-4 w-1/2 animate-pulse rounded bg-muted" />
-            <div className="h-9 w-full animate-pulse rounded bg-muted" />
+            <Skeleton className="h-5 w-2/3" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-9 w-full" />
           </div>
         </div>
       ))}
@@ -58,9 +65,7 @@ export function FeaturedStudios() {
             <h2 id="featured-heading" className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
               Featured studios
             </h2>
-            <p className="mt-3 text-muted-foreground">
-              Our highest-rated spaces, ready to book by the hour.
-            </p>
+            <p className="mt-3 text-muted-foreground">Our highest-rated spaces, ready to book by the hour.</p>
           </div>
           <Button variant="outline" nativeButton={false} render={<Link href="/studios" />}>
             Browse all studios
