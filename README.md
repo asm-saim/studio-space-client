@@ -1,5 +1,5 @@
 <h1>
-  <img src="./public/title_logo.png" alt="StudioSpace logo" width="33" align="absmiddle" />
+  <img src="./public/title_logo.png" alt="StudioSpace logo" width="32" align="absmiddle" />
   StudioSpace
 </h1>
 **A peer-to-peer marketplace for creative studios.** Hosts list photo studios, sound stages, podcast rooms, music suites and art workshops. Creators discover them, check pricing, and book the hours they need.
