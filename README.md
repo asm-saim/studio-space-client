@@ -8,19 +8,28 @@
 <br clear="left" />
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Express](https://img.shields.io/badge/Express-5-000000?logo=express)](https://expressjs.com)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
+[![Better Auth](https://img.shields.io/badge/Better_Auth-000000?logo=betterauth&logoColor=white)](https://www.better-auth.com)
+[![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel)](https://vercel.com)
 
-## 🔗 Live Site
+---
 
-| | |
+## Live Site
+
+| Resource | URL |
 |---|---|
-| **Live site (client)** | https://studio-space-v1.vercel.app |
-| **API (server)** | https://studio-space-server-v1.vercel.app |
-| **Server repository** | https://github.com/asm-saim/studio-space-server |
+| **Live Site (Client)** | [studio-space-v1.vercel.app](https://studio-space-v1.vercel.app) |
+| **API (Server)** | [studio-space-server-v1.vercel.app](https://studio-space-server-v1.vercel.app) |
+| **Sample Endpoint** | [`/studios`](https://studio-space-server-v1.vercel.app/studios) |
+| **Server Repository** | [github.com/asm-saim/studio-space-server](https://github.com/asm-saim/studio-space-server) |
 
-## 🔑 Examiner Test Credentials
+---
+
+## Examiner Test Credentials
 
 Log in with either account below, or use **Continue with Google**.
 
@@ -29,50 +38,71 @@ Log in with either account below, or use **Continue with Google**.
 | **Host** (owns the demo studios, receives booking requests) | `host@studiospace.demo` | `Host1234` |
 | **Guest** (books studios) | `guest@studiospace.demo` | `Guest1234` |
 
-You can also register a new account. Passwords need an uppercase letter, a lowercase letter, and at least 6 characters.
 
-## ✨ Features
+---
 
-- **Dynamic home page.** A full-screen Swiper hero slider, the top 6 rated studios fetched live from MongoDB, category cards that open `/studios` with that category pre-selected, a "How Booking Works" section, and a "Host Guarantee" section.
-- **Explore and search.** Browse every studio in an equal-height card grid, filter by category, and search by name or location. Empty results show a friendly state with a way back.
-- **Full studio CRUD.** Hosts add, update and delete their own listings. A listing has pricing, deposit, capacity, amenity tags, a gallery of images uploaded through imgbb, and a detailed overview. Deleting asks for confirmation in a custom modal first.
-- **Studio details and booking.** Each studio has an image-gallery carousel, specifications, amenities, host details and reviews. The "Book Workspace Now" modal shows live pricing for the hours you pick.
-- **Booking lifecycle.** New bookings start as **Pending**. Guests can cancel pending bookings, and hosts confirm or decline requests from a dedicated page. Status badges cover Pending, Confirmed, Completed and Cancelled.
-- **Personal dashboard.** A summary of your studios, booking requests, bookings and recent activity, with quick actions for pending requests.
-- **Authentication.** Email and password sign-up, plus Google sign-in, powered by BetterAuth with the MongoDB adapter. Password rules are checked in the form with inline errors.
-- **Polished experience.** Light and dark themes, skeleton loaders and spinners, toast feedback for every action (Sonner), a custom 404 page, and a layout that works on mobile, tablet and desktop.
+## Overview
 
-## 🏆 Challenges Implemented
+StudioSpace is a full-stack web application designed to simplify the discovery and booking of creative workspaces. It connects studio owners with creators looking for professional environments to bring their ideas to life.
 
-| Challenge | How it works |
-|---|---|
-| **1. JWT in HttpOnly cookies** | Logging in sets a signed JWT in an HttpOnly cookie. `POST /api/studios`, `PUT` and `DELETE /api/studios/[id]`, and `POST /api/bookings` return **401 Unauthorized** without a valid token. The Express server verifies the token again independently. |
-| **2. Double-booking prevention** | Before saving, the server checks the studio's **Confirmed** bookings for the same date with a MongoDB overlap query (`startMin < newEnd` and `endMin > newStart`). Collisions get a **409** and a clear message such as "That time overlaps a confirmed booking (2:00 PM – 4:00 PM)". The check runs again when a host confirms a request. |
-| **3. Theme customization** | A sun/moon toggle in the navbar switches the whole app between light and dark. The choice is remembered, and there is no flash on reload. |
+From photography studios and cinema sound stages to podcast lounges and music recording suites, StudioSpace provides a centralized platform for discovering spaces, managing listings, and handling reservations.
 
-### Quick ways to verify
+The platform focuses on delivering an intuitive user experience, secure authentication, responsive design, and reliable booking management.
 
-1. **401 check:** this returns `401 Unauthorized`.
-   ```bash
-   curl -i -X POST https://studio-space-v1.vercel.app/api/studios -H "Content-Type: application/json" -d "{}"
-   ```
-   After logging in, open DevTools, then Application, then Cookies, and `studiospace_jwt` is marked **HttpOnly**.
-2. **Double-booking check:** log in as the Guest and book a studio. Log in as the Host, open **Booking requests**, and confirm it. Then book the same studio, date and an overlapping time again. The overlap is rejected with a toast.
+---
 
-## 🛠️ Tech Stack
+## Features
+
+### Home Page & Studio Discovery
+- **Dynamic Home Page:** Full-screen Swiper hero slider, top 6 highest-rated studios fetched from MongoDB, category cards with pre-selected filters, and dedicated "How Booking Works" and "Host Guarantee" sections.
+- **Explore & Search:** Browse studios in a consistent card grid, filter by category, and search by studio name or location. Includes user-friendly empty states.
+
+### Studio Management
+- **Studio CRUD Operations:** Hosts can create, update, and delete their own studio listings, including pricing, deposits, capacity, amenities, image galleries, and detailed descriptions.
+- **Image Management:** Studio images are uploaded through ImgBB and displayed in listing galleries.
+- **Studio Details:** Dedicated studio pages featuring image carousels, specifications, amenities, host information, and reviews.
+
+### Booking & Reservation Management
+- **Booking System:** Submit booking requests through the "Book Workspace Now" modal, with pricing calculated dynamically based on the selected booking duration.
+- **Booking Lifecycle:** Bookings begin with a **Pending** status. Guests can cancel pending bookings, while hosts can confirm or decline requests through a dedicated management page.
+- **Booking Status Tracking:** Consistent status badges for Pending, Confirmed, Completed, and Cancelled bookings.
+- **Double-Booking Prevention:** MongoDB time-overlap queries prevent conflicting confirmed reservations. The server revalidates booking availability when hosts confirm requests and returns HTTP 409 for scheduling conflicts.
+
+### Dashboard & User Management
+- **Personalized Dashboard:** Overview of studio listings, booking requests, personal bookings, and recent activity, with quick actions for pending requests.
+- **Authentication:** Email/password registration and Google sign-in powered by Better Auth and its MongoDB adapter.
+- **Form Validation:** Password requirements and authentication form errors are handled with inline validation.
+
+### Security & Authorization
+- **JWT Authentication:** Signed JWTs are stored in HttpOnly cookies for authenticated sessions.
+- **Protected API Endpoints:** Studio creation, updates, deletion, and booking requests require valid authentication and return HTTP 401 when unauthorized.
+- **Server-Side Authorization:** The Express backend independently verifies authentication tokens before processing protected operations.
+
+### User Experience & Interface
+- **Light & Dark Themes:** Theme switching through a sun/moon toggle, with preferences remembered across reloads and no theme flash.
+- **Responsive Design:** Optimized layouts for mobile, tablet, and desktop devices.
+- **Loading States:** Skeleton loaders and spinners provide visual feedback during data fetching.
+- **Notifications:** Sonner toast notifications provide feedback for user actions.
+- **Custom Error Handling:** Dedicated 404 page, confirmation modals for destructive actions, and contextual empty states.
+
+---
+
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Frontend | Next.js 16 (App Router), React 19, TypeScript |
+| Frontend | Next.js 16, React 19, TypeScript |
 | UI | Tailwind CSS 4, shadcn/ui (Base UI), Lucide icons, Swiper, Embla Carousel |
 | Feedback | Sonner toasts, custom dialogs |
 | Authentication | BetterAuth, MongoDB adapter, Google OAuth, JWT (`jose`) |
-| Backend | Express 5 (separate repository) |
+| Backend | Express 5 |
 | Database | MongoDB Atlas |
-| Image uploads | imgbb API |
-| Hosting | Vercel (client and server) |
+| Image uploads | imgBB API |
+| Hosting | Vercel|
 
-## 🧭 Routes
+---
+
+## Routes
 
 | Route | Access | Purpose |
 |---|---|---|
@@ -87,7 +117,9 @@ You can also register a new account. Passwords need an uppercase letter, a lower
 | `/my-bookings` | Private | Your reservations |
 | `/booking-requests` | Private | Confirm or decline requests for your studios |
 
-## 🚀 Local Setup
+---
+
+## Local Setup
 
 ### Prerequisites
 
@@ -144,17 +176,9 @@ In Google Cloud Console, add `http://localhost:3000/api/auth/callback/google` as
 ```bash
 npm run dev      # http://localhost:3000
 ```
+---
 
-### Useful scripts
-
-| Command | What it does |
-|---|---|
-| `npm run dev` | Start the development server |
-| `npm run build` | Create a production build |
-| `npm start` | Run the production build |
-| `npm run lint` | Run ESLint |
-
-## 🏗️ How It Fits Together
+## How It Fits Together
 
 ```
 Browser ──► Next.js client (Vercel) ──► Express API (Vercel) ──► MongoDB Atlas
@@ -165,15 +189,46 @@ Browser ──► Next.js client (Vercel) ──► Express API (Vercel) ──�
 
 The Next.js app handles sign-in and holds the HttpOnly JWT cookie. Every mutation goes through a guarded `/api` route, which forwards the token to the Express server. Express verifies the token again before touching the database.
 
-## 📁 Project Structure
+---
 
+## Application Architecture
+ 
+The project is split into two applications that live side by side:
+ 
+```text
+StudioSpace
+│
+├── studio-space-client              # Next.js app (this repository)
+│   ├── src
+│   │   ├── app                      # Pages, API route handlers, loading and 404 pages
+│   │   ├── components               # auth, dashboard, home, layout, shared, studios, theme, ui
+│   │   └── lib                      # Authentication, JWT, API helpers, data fetching, formatting
+│   ├── public                       # Logo and static assets
+│   └── README.md
+│
+└── studio-space-server              # Express REST API
+    ├── routes                       # studios.js, bookings.js
+    ├── middleware                   # auth.js (JWT verification)
+    ├── db.js                        # MongoDB connection and collections
+    ├── index.js                     # App entry point
+    └── seed.js                      # Demo studio data
 ```
-src/
-├── app/            # Routes: pages, API route handlers, loading and 404 pages
-├── components/     # auth, dashboard, home, layout, shared, studios, theme, ui
-└── lib/            # auth, JWT, API helpers, data fetching, formatting
-```
+ 
+---
 
-## 👤 Author
+## Future Improvements
 
-Built by **A S M Saim** for the StudioSpace assignment.
+Potential enhancements include:
+
+- Studio wishlist and favorites.
+- PDF booking invoice generation.
+- Advanced availability calendars.
+- Reviews and ratings.
+- Online payment integration.
+- Enhanced studio recommendation and discovery features.
+
+---
+
+## Author
+
+Built by **A S M Saim** 
