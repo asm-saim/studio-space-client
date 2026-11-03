@@ -1,287 +1,203 @@
-import { Suspense, type ReactNode } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Building2,
-  CalendarDays,
-  CloudOff,
-  Inbox,
-  LayoutDashboard,
-  Plus,
-  Wallet,
-  type LucideIcon,
-} from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Building2, CalendarDays, CheckCircle2, CloudOff, Inbox, Plus, Search, Wallet } from "lucide-react";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageContainer } from "@/components/shared/page-container";
-import { Skeleton } from "@/components/shared/skeletons";
-import { BookingRequestActions } from "@/components/studios/booking-request-actions";
-import { BookingStatusBadge } from "@/components/studios/booking-status-badge";
-import { CancelBookingButton } from "@/components/studios/cancel-booking-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { formatDate, formatMoney, formatTime, initialsOf } from "@/lib/format";
-import { getMyBookings, getBookingRequests, getMyStudios } from "@/lib/private-data";
-import { requireUser } from "@/lib/session";
-import type { Booking, BookingRequest } from "@/lib/bookings";
+import { formatMoney, initialsOf } from "@/lib/format";
+import { getBookingRequests, getMyBookings, getMyStudios } from "@/lib/private-data";
+import { requireUser, type SessionUser } from "@/lib/session";
 import { cn } from "@/lib/utils";
+import { StatCard, StatCardProps } from "./stat-card";
+import { DashboardOnboarding } from "./onboarding";
+import { DashboardPanel, PanelError } from "./dashboard-panel";
+import { RecentRequests } from "./recent-requests";
+import { RecentBookings } from "./recent-bookings";
+import { DashboardSkeleton } from "./dashboard-skeleton";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
-type Stat = {
-  label: string;
-  value: string;
-  href: string;
-  icon: LucideIcon;
-};
-
-function StatCard({ stat }: { stat: Stat }) {
-  const Icon = stat.icon;
-  return (
-    <Link
-      href={stat.href}
-      className="group rounded-2xl border bg-card p-5 outline-none transition-colors hover:border-primary/60 focus-visible:ring-3 focus-visible:ring-ring/50"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <span
-          aria-hidden="true"
-          className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary"
-        >
-          <Icon className="size-5" />
-        </span>
-        <ArrowRight
-          aria-hidden="true"
-          className="mt-1 size-4 text-muted-foreground transition-colors group-hover:text-primary"
-        />
-      </div>
-      <p className="mt-4 text-sm text-muted-foreground">{stat.label}</p>
-      <p className="font-heading mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
-        {stat.value}
-      </p>
-    </Link>
-  );
+/** Resolves to null (and logs) instead of throwing, so one failed request can't blank the page. */
+async function settle<T>(promise: Promise<T>): Promise<T | null> {
+  try {
+    return await promise;
+  } catch (error) {
+    console.error("Dashboard data failed to load", error);
+    return null;
+  }
 }
 
-function Panel({ title, allHref, children }: { title: string; allHref: string; children: ReactNode }) {
+function Welcome({ user, subtitle }: { user: SessionUser; subtitle: string }) {
+  const firstName = user.name.trim().split(/\s+/)[0] || "there";
+
   return (
-    <section className="rounded-2xl border bg-card p-5 sm:p-6">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="font-heading text-lg font-semibold">{title}</h2>
-        <Link
-          href={allHref}
-          className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
-        >
-          View all
-          <ArrowRight aria-hidden="true" className="size-3.5" />
-        </Link>
+    <section
+      aria-labelledby="welcome-heading"
+      className="flex flex-col gap-6 rounded-3xl border bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-8 md:flex-row md:items-center md:justify-between"
+    >
+      <div className="flex min-w-0 items-center gap-4 sm:gap-5">
+        <Avatar className="size-16 sm:size-20">
+          <AvatarImage src={user.image} alt="" referrerPolicy="no-referrer" />
+          <AvatarFallback className="text-xl">{initialsOf(user.name)}</AvatarFallback>
+        </Avatar>
+        <div className="min-w-0">
+          <h1 id="welcome-heading" className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">
+            Welcome back, {firstName}
+          </h1>
+          <p className="mt-1 text-muted-foreground">{subtitle}</p>
+        </div>
       </div>
-      <ul className="mt-2 divide-y divide-border/70">{children}</ul>
+
+      <div className="flex flex-wrap gap-3">
+        <Button size="lg" className="h-11" nativeButton={false} render={<Link href="/add-studio" />}>
+          <Plus aria-hidden="true" />
+          Add New Studio
+        </Button>
+        <Button size="lg" variant="outline" className="h-11" nativeButton={false} render={<Link href="/studios" />}>
+          <Search aria-hidden="true" />
+          Explore Studios
+        </Button>
+      </div>
     </section>
   );
 }
 
-function RequestRow({ request }: { request: BookingRequest }) {
-  return (
-    <li className="space-y-2 py-3 first:pt-0 last:pb-0">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="min-w-0 truncate text-sm font-semibold">{request.studioTitle}</h3>
-        <BookingStatusBadge status={request.status} />
-      </div>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="min-w-0 truncate text-sm text-muted-foreground">
-          {request.userName || "Guest"} · {formatDate(request.date)} ·{" "}
-          {formatTime(request.startTime)} – {formatTime(request.endTime)}
-        </p>
-        {request.status === "Pending" && (
-          <BookingRequestActions id={request.id} guestName={request.userName} />
-        )}
-      </div>
-    </li>
-  );
-}
-
-function BookingRow({ booking }: { booking: Booking }) {
-  return (
-    <li className="space-y-2 py-3 first:pt-0 last:pb-0">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="min-w-0 truncate text-sm font-semibold">
-          <Link href={`/studios/${booking.studioId}`} className="hover:underline">
-            {booking.studioTitle}
-          </Link>
-        </h3>
-        <BookingStatusBadge status={booking.status} />
-      </div>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="min-w-0 truncate text-sm text-muted-foreground">
-          {formatDate(booking.date)} · {formatTime(booking.startTime)} –{" "}
-          {formatTime(booking.endTime)} ({booking.hours} hr)
-        </p>
-        {booking.status === "Pending" && (
-          <CancelBookingButton id={booking.id} title={booking.studioTitle} />
-        )}
-      </div>
-    </li>
-  );
-}
-
-function DashboardSkeleton() {
-  return (
-    <div role="status" aria-label="Loading dashboard" className="space-y-8">
-      <div className="flex items-center gap-4">
-        <Skeleton className="size-10 shrink-0 rounded-full" />
-        <div className="min-w-0 space-y-2">
-          <Skeleton className="h-9 w-64 max-w-full" />
-          <Skeleton className="h-4 w-80 max-w-full" />
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-        {Array.from({ length: 4 }, (_, i) => (
-          <Skeleton key={i} className="h-32 rounded-2xl" />
-        ))}
-      </div>
-      <div className="grid gap-6 lg:grid-cols-2">
-        {Array.from({ length: 2 }, (_, i) => (
-          <Skeleton key={i} className="h-56 rounded-2xl" />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-async function Dashboard() {
+async function DashboardContent() {
   const user = await requireUser("/dashboard");
 
-  const greeting = (
-    <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex min-w-0 items-center gap-4">
-        <Avatar size="lg">
-          <AvatarImage src={user.image} alt={user.name} referrerPolicy="no-referrer" />
-          <AvatarFallback>{initialsOf(user.name)}</AvatarFallback>
-        </Avatar>
-        <div className="min-w-0">
-          <h1 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            Welcome back, {user.name}
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Here&apos;s your StudioSpace overview — listings, requests, and bookings in one place.
-          </p>
-        </div>
-      </div>
-      <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
-        <Button nativeButton={false} render={<Link href="/add-studio" />}>
-          <Plus aria-hidden="true" />
-          Add New Studio
-        </Button>
-        <Button variant="outline" nativeButton={false} render={<Link href="/studios" />}>
-          Explore Studios
-        </Button>
-      </div>
-    </header>
-  );
+  // The three requests are independent, so they run in parallel.
+  const [studios, bookings, requests] = await Promise.all([
+    settle(getMyStudios(user)),
+    settle(getMyBookings(user)),
+    settle(getBookingRequests(user)),
+  ]);
 
-  let studios: Awaited<ReturnType<typeof getMyStudios>> = [];
-  let requests: Awaited<ReturnType<typeof getBookingRequests>> = [];
-  let bookings: Awaited<ReturnType<typeof getMyBookings>> = [];
-  try {
-    [studios, requests, bookings] = await Promise.all([
-      getMyStudios(user),
-      getBookingRequests(user),
-      getMyBookings(user),
-    ]);
-  } catch (error) {
-    console.error("Failed to load dashboard", error);
+  if (!studios && !bookings && !requests) {
     return (
-      <>
-        {greeting}
-        <div className="mt-8">
-          <EmptyState
-            icon={CloudOff}
-            title="We couldn't load your dashboard"
-            description="Something went wrong on our side. Please try again in a moment."
-          >
-            <Button nativeButton={false} render={<Link href="/dashboard" />}>
-              Try again
-            </Button>
-          </EmptyState>
-        </div>
-      </>
+      <div className="space-y-8">
+        <Welcome user={user} subtitle="Here's your StudioSpace overview." />
+        <EmptyState icon={CloudOff} title="We couldn't load your dashboard" description="Something went wrong on our side. Please try again in a moment.">
+          <Button nativeButton={false} render={<Link href="/dashboard" />}>
+            Try again
+          </Button>
+        </EmptyState>
+      </div>
     );
   }
 
-  // A brand-new user sees a welcoming empty state instead of zero-value cards.
-  if (studios.length === 0 && requests.length === 0 && bookings.length === 0) {
-    return (
-      <>
-        {greeting}
-        <div className="mt-8">
-          <EmptyState
-            icon={LayoutDashboard}
-            title="Welcome to your dashboard"
-            description="List your first studio or explore spaces to book — everything you host and book will show up here."
-          >
-            <Button nativeButton={false} render={<Link href="/add-studio" />}>
-              <Plus aria-hidden="true" />
-              Add your first studio
-            </Button>
-            <Button variant="outline" nativeButton={false} render={<Link href="/studios" />}>
-              Explore studios
-            </Button>
-          </EmptyState>
-        </div>
-      </>
-    );
+  const studioCount = studios?.length ?? 0;
+  const bookingCount = bookings?.length ?? 0;
+  const requestList = requests ?? [];
+  const isHost = studioCount > 0 || requestList.length > 0;
+  const isNewUser = studios !== null && bookings !== null && studioCount === 0 && bookingCount === 0;
+
+  const pendingRequests = requestList.filter((r) => r.status === "Pending").length;
+  const confirmedRequests = requestList.filter((r) => r.status === "Confirmed").length;
+  const completedRequests = requestList.filter((r) => r.status === "Completed");
+  const earnings = completedRequests.reduce((sum, r) => sum + r.totalPrice, 0);
+  const pendingBookings = (bookings ?? []).filter((b) => b.status === "Pending").length;
+
+  const subtitle =
+    pendingRequests > 0
+      ? `You have ${pendingRequests} booking ${pendingRequests === 1 ? "request" : "requests"} waiting for your reply.`
+      : isNewUser
+        ? "Let's get you started on StudioSpace."
+        : "Here's a snapshot of your studios and bookings.";
+
+  // Only real, user-specific numbers. Cards with nothing to say are left out.
+  const stats: StatCardProps[] = [];
+  if (studioCount > 0) {
+    stats.push({
+      href: "/my-listings",
+      label: "My Studios",
+      value: studioCount,
+      hint: studioCount === 1 ? "listing on StudioSpace" : "listings on StudioSpace",
+      icon: Building2,
+      tone: "primary",
+    });
+  }
+  if (isHost && requests) {
+    stats.push({
+      href: "/booking-requests",
+      label: "Booking Requests",
+      value: pendingRequests,
+      hint: pendingRequests > 0 ? "awaiting your reply" : "You're all caught up",
+      icon: Inbox,
+      tone: pendingRequests > 0 ? "primary" : "neutral",
+      highlight: pendingRequests > 0,
+    });
+  }
+  if (bookingCount > 0) {
+    stats.push({
+      href: "/my-bookings",
+      label: "My Bookings",
+      value: bookingCount,
+      hint: pendingBookings > 0 ? `${pendingBookings} pending` : "reservations you've made",
+      icon: CalendarDays,
+      tone: "neutral",
+    });
+  }
+  // Earnings only come from bookings marked Completed. If there are none yet, show
+  // Confirmed bookings instead of a misleading "$0".
+  if (completedRequests.length > 0) {
+    stats.push({
+      href: "/booking-requests",
+      label: "Earnings",
+      value: formatMoney(earnings),
+      hint: `from ${completedRequests.length} completed ${completedRequests.length === 1 ? "booking" : "bookings"}`,
+      icon: Wallet,
+      tone: "muted",
+    });
+  } else if (confirmedRequests > 0) {
+    stats.push({
+      href: "/booking-requests",
+      label: "Confirmed Bookings",
+      value: confirmedRequests,
+      hint: "reserved at your studios",
+      icon: CheckCircle2,
+      tone: "muted",
+    });
   }
 
-  const pendingRequests = requests.filter((request) => request.status === "Pending").length;
-  // Confirmed bookings are paid for at booking time; Cancelled ones never count.
-  const earnings = requests
-    .filter((request) => request.status === "Confirmed" || request.status === "Completed")
-    .reduce((total, request) => total + request.totalPrice, 0);
-
-  const stats: Stat[] = [
-    { label: "My Studios", value: String(studios.length), href: "/my-listings", icon: Building2 },
-    { label: "Booking Requests", value: String(pendingRequests), href: "/booking-requests", icon: Inbox },
-    { label: "My Bookings", value: String(bookings.length), href: "/my-bookings", icon: CalendarDays },
-    { label: "Earnings", value: formatMoney(earnings), href: "/booking-requests", icon: Wallet },
-  ];
-
-  const recentRequests = requests.slice(0, 3);
-  const recentBookings = bookings.slice(0, 3);
+  const showRequestsPanel = isHost;
+  const showBookingsPanel = bookingCount > 0 || bookings === null;
+  const panelCount = Number(showRequestsPanel) + Number(showBookingsPanel);
 
   return (
-    <>
-      {greeting}
+    <div className="space-y-8">
+      <Welcome user={user} subtitle={subtitle} />
 
-      <section aria-label="Overview" className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-        {stats.map((stat) => (
-          <StatCard key={stat.label} stat={stat} />
-        ))}
-      </section>
+      {isNewUser ? (
+        <DashboardOnboarding />
+      ) : (
+        <>
+          {stats.length > 0 && (
+            <section aria-label="Overview" className="grid grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] gap-4">
+              {stats.map((stat) => (
+                <StatCard key={stat.label} {...stat} />
+              ))}
+            </section>
+          )}
 
-      {(recentRequests.length > 0 || recentBookings.length > 0) && (
-        <div
-          className={cn(
-            "mt-6 grid gap-6",
-            recentRequests.length > 0 && recentBookings.length > 0 && "lg:grid-cols-2",
+          {panelCount > 0 && (
+            <div className={cn("grid gap-6", panelCount > 1 && "lg:grid-cols-2")}>
+              {showRequestsPanel && (
+                <DashboardPanel id="recent-requests-heading" title="Recent booking requests" href="/booking-requests">
+                  {requests ? <RecentRequests requests={requests} /> : <PanelError />}
+                </DashboardPanel>
+              )}
+              {showBookingsPanel && (
+                <DashboardPanel id="recent-bookings-heading" title="Recent bookings" href="/my-bookings">
+                  {bookings ? <RecentBookings bookings={bookings} /> : <PanelError />}
+                </DashboardPanel>
+              )}
+            </div>
           )}
-        >
-          {recentRequests.length > 0 && (
-            <Panel title="Recent booking requests" allHref="/booking-requests">
-              {recentRequests.map((request) => (
-                <RequestRow key={request.id} request={request} />
-              ))}
-            </Panel>
-          )}
-          {recentBookings.length > 0 && (
-            <Panel title="Recent bookings" allHref="/my-bookings">
-              {recentBookings.map((booking) => (
-                <BookingRow key={booking.id} booking={booking} />
-              ))}
-            </Panel>
-          )}
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 }
 
@@ -289,7 +205,7 @@ export default function DashboardPage() {
   return (
     <PageContainer>
       <Suspense fallback={<DashboardSkeleton />}>
-        <Dashboard />
+        <DashboardContent />
       </Suspense>
     </PageContainer>
   );
