@@ -1,10 +1,5 @@
 <h1>
-  <img
-    src="./public/icon.png"
-    alt="StudioSpace logo"
-    width="35"
-    style="vertical-align: middle; margin-top: -4px;"
-  />
+  <img src="./public/icon.png" alt="StudioSpace logo" width="35" align="absmiddle" />
   StudioSpace
 </h1>
 
