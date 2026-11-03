@@ -1,9 +1,9 @@
-<h1 style="display: flex; align-items: center; gap: 10px; line-height: 1;">
+<h1>
   <img
     src="./public/icon.png"
     alt="StudioSpace logo"
     width="35"
-    style="transform: translateY(2px);"
+    style="vertical-align: middle; margin-top: -4px;"
   />
   StudioSpace
 </h1>
