@@ -1,5 +1,10 @@
-<h1 style="display: flex; align-items: center; gap: 10px;">
-  <img src="./public/icon.png" alt="StudioSpace logo" width="35" />
+<h1>
+  <img
+    src="./public/icon.png"
+    alt="StudioSpace logo"
+    width="35"
+    style="vertical-align: middle;"
+  />
   StudioSpace
 </h1>
 
