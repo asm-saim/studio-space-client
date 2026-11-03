@@ -1,5 +1,5 @@
-<h1>
-  <img src="./public/title_logo.png" alt="StudioSpace logo" width="35" align="absmiddle" />
+<h1 style="display: flex; align-items: center; gap: 10px;">
+  <img src="./public/title_logo.png" alt="StudioSpace logo" width="35" />
   StudioSpace
 </h1>
 
